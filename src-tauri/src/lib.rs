@@ -378,7 +378,7 @@ async fn change_url(app_handle: AppHandle, index: usize, end_time: i64) {
     //     return;
     // }
 
-    webview.eval(format!(r#"
+    webview.eval(r#"
         console.log('Showing loading overlay');
             container = document.getElementById('url-list-shadow-container');
             shadow = container.shadowRoot;
@@ -387,10 +387,10 @@ async fn change_url(app_handle: AppHandle, index: usize, end_time: i64) {
                 aloadingOverlay.style.opacity = '1';
                 aloadingOverlay.style.pointerEvents = 'auto';
             }}
-        //setTimeout(() => {{
-        //window.location.href = "{}";
-        //}}, 200);
-    "#, url))
+        setTimeout(() => {{
+            window.location.reload();
+        }}, 100);
+    "#)
         .expect("Failed to execute console log in webview");
 
     sleep(Duration::from_millis(200)).await;
