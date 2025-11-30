@@ -2,7 +2,7 @@ import './App.css';
 import {Settings} from './components/Settings.jsx';
 import {useEffect, useRef, useState} from 'react';
 import {invoke} from "@tauri-apps/api/core";
-import {listen} from "@tauri-apps/api/event";
+import {listen, TauriEvent} from "@tauri-apps/api/event";
 
 const App = () => {
     const displayUrlsRef = useRef(['']);
@@ -53,9 +53,15 @@ const App = () => {
             }
         });
 
+        listen(TauriEvent.WINDOW_DESTROYED, () => {
+            setIndex(-1);
+            endTimeRef.current = 0;
+            clearInterval(intervalIdRef.current);
+        });
+
         const onKeyUp = (e) => {
             const urls = displayUrlsRef.current;
-            if (urls.length === 0) return;
+            if (urls.length === 0 || endTimeRef.current === 0) return;
             if (e.key === 'ArrowRight') increaseIndex();
             if (e.key === 'ArrowLeft') decreaseIndex();
         };
