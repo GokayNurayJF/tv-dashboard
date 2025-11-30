@@ -307,6 +307,11 @@ async fn create_window(app_handle: AppHandle, urls: Vec<String>) {
     info!("starting error loop");
     loop {
         sleep(Duration::from_secs(5)).await;
+        if app_handle.get_webview_window("screen").is_none() {
+            info!("screen window is closed, stopping loop.");
+            *ERROR_LOOP_STARTED.lock().unwrap() = false;
+            break;
+        }
         let status = check_window(app_handle.clone()).await;
         if !status {
             warn!("Window is dead, moving to next URL");
@@ -331,8 +336,8 @@ async fn check_window(app_handle: AppHandle) -> bool {
 
     *WINDOW_LOCK.lock().unwrap() = false;
 
-    // wait 1 second for a response
-    sleep(Duration::from_secs(1)).await;
+    // wait 5 seconds for a response
+    sleep(Duration::from_secs(5)).await;
 
     *WINDOW_LOCK.lock().unwrap()
 }
