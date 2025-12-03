@@ -159,9 +159,9 @@ async fn create_window(app_handle: AppHandle, urls: Vec<String>) {
 
     let inject_script = format!(
         r##"
-        document.addEventListener('DOMContentLoaded', function() {{
-
+        window.__TV_DASHBOARD_SET_OVERLAY = function() {{
         let container = document.createElement('div');
+        window.__TV_DASHBOARD_OVERLAY_CONTAINER = container;
         container.id = 'url-list-shadow-container';
         document.body.insertAdjacentElement('beforebegin', container);
         let shadow = container.attachShadow({{ mode: 'open' }});
@@ -254,7 +254,10 @@ async fn create_window(app_handle: AppHandle, urls: Vec<String>) {
                 }}, 100);
             }}
         }})().catch((e) => console.error('Error creating URL list:', e));
-        }});
+    }};
+
+        window.addEventListener('DOMContentLoaded', window.__TV_DASHBOARD_SET_OVERLAY);
+
         window.addEventListener('click', () => {{
             window.__TAURI_INTERNALS__.invoke('reset_timer');
         }});
@@ -392,9 +395,15 @@ async fn change_url(app_handle: AppHandle, index: usize, end_time: i64) {
                 aloadingOverlay.style.opacity = '1';
                 aloadingOverlay.style.pointerEvents = 'auto';
             }}
-        setTimeout(() => {{
-            window.location.reload();
-        }}, 100);
+            loc = location.href;
+            checkChangeInterval = setInterval(() => {{
+                if (location.href !== loc) {{
+                    window.__TV_DASHBOARD_OVERLAY_CONTAINER.remove();
+                    window.__TV_DASHBOARD_SET_OVERLAY();
+                    clearInterval(checkChangeInterval);
+                }}
+                console.log("checking for changes");
+            }});
     "#)
         .expect("Failed to execute console log in webview");
 
