@@ -1,4 +1,5 @@
 use tauri::window::Color;
+use tauri::webview::NewWindowResponse;
 use tauri::{command, AppHandle, Emitter, Manager, Url, WebviewUrl, WebviewWindowBuilder};
 
 use log::{info, warn};
@@ -284,6 +285,9 @@ async fn create_window(app_handle: AppHandle, urls: Vec<String>) {
     .visible(true)
     .inner_size(600.0, 800.0)
     .initialization_script(&inject_script)
+    .on_new_window(move |_, _| {
+        NewWindowResponse::Allow
+    })
     .build()
     .expect("Failed to create new window");
 

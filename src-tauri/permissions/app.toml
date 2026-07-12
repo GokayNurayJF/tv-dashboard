@@ -1,0 +1,15 @@
+[[permission]]
+identifier = "allow-dashboard-commands"
+description = "Dashboard IPC commands"
+commands.allow = [
+  "greet",
+  "create_window",
+  "reset_timer",
+  "change_url",
+  "keyup",
+  "create_list",
+  "get_page_change_timestamp",
+  "set_page_change_timestamp",
+  "check_window",
+  "window_alive",
+]
